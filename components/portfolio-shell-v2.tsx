@@ -81,11 +81,12 @@ export default function PortfolioShellV2() {
   const carouselStartX = useRef<number | null>(null);
   const carouselInteractionAt = useRef(0);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
+  const [selectedProject, setSelectedProject] = useState<SiteContent["projects"][number] | null>(null);
   const [formError, setFormError] = useState("");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [siteContent, setSiteContent] = useState<SiteContent>({ copy, designer, driveFolderUrl, projectFilters, projects, services, socialLinks, studioPrinciples });
-  const { copy: liveCopy, designer: liveDesigner, driveFolderUrl: liveDriveFolderUrl, projectFilters: liveProjectFilters, projects: liveProjects, services: liveServices, socialLinks: liveSocialLinks } = siteContent;
+  const { copy: liveCopy, designer: liveDesigner, projectFilters: liveProjectFilters, projects: liveProjects, services: liveServices, socialLinks: liveSocialLinks } = siteContent;
   const t = liveCopy[locale];
   const direction = locale === "ar" ? "rtl" : "ltr";
 
@@ -113,6 +114,15 @@ export default function PortfolioShellV2() {
     document.documentElement.dir = direction;
   }, [direction, locale]);
 
+  useEffect(() => {
+    if (!selectedProject) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProject(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [selectedProject]);
+
   const emptyText = useMemo(() => {
     if (activeFilter === "all") return t.emptyDescription;
     const label = liveProjectFilters.find((filter) => filter.id === activeFilter);
@@ -127,7 +137,7 @@ export default function PortfolioShellV2() {
   );
   const projectGroups = useMemo(() => {
     const groups: (typeof visibleProjects)[] = [];
-    for (let index = 0; index < visibleProjects.length; index += 4) groups.push(visibleProjects.slice(index, index + 4));
+    for (let index = 0; index < visibleProjects.length; index += 2) groups.push(visibleProjects.slice(index, index + 2));
     return groups;
   }, [visibleProjects]);
 
@@ -294,7 +304,7 @@ export default function PortfolioShellV2() {
 
       <section className="neo-work neo-pad" id="work">
         <div className="neo-section-heading"><div><span className="neo-section-number">01 / 05</span><h2><Lines>{locale === "ar" ? "أعمال حقيقية.\nإحساس واضح." : "Real work.\nClear feeling."}</Lines></h2></div><p>{t.selectedWorkDescription}</p></div>
-        <div className="neo-work-toolbar"><div className="neo-filters" role="tablist" aria-label={locale === "ar" ? "تصفية الأعمال" : "Work filters"}>{liveProjectFilters.map((filter) => <button type="button" role="tab" aria-selected={activeFilter === filter.id} className={activeFilter === filter.id ? "is-active" : ""} key={filter.id} onClick={() => setActiveFilter(filter.id)}>{locale === "ar" ? filter.label : filter.labelEn}</button>)}</div><div className="neo-work-meta"><span className="neo-count">{String(visibleProjects.length).padStart(2, "0")} / {locale === "ar" ? "مشروع منشور" : "PUBLISHED PROJECTS"}</span><a className="neo-archive-link" href={liveDriveFolderUrl} target="_blank" rel="noreferrer">{t.openArchive}<ExternalLinkIcon width={14} height={14} /></a></div></div>
+        <div className="neo-work-toolbar"><div className="neo-filters" role="tablist" aria-label={locale === "ar" ? "تصفية الأعمال" : "Work filters"}>{liveProjectFilters.map((filter) => <button type="button" role="tab" aria-selected={activeFilter === filter.id} className={activeFilter === filter.id ? "is-active" : ""} key={filter.id} onClick={() => setActiveFilter(filter.id)}>{locale === "ar" ? filter.label : filter.labelEn}</button>)}</div><div className="neo-work-meta"><span className="neo-count">{String(visibleProjects.length).padStart(2, "0")} / {locale === "ar" ? "مشروع منشور" : "PUBLISHED PROJECTS"}</span><span className="neo-archive-link neo-archive-note">{t.selectedWork}</span></div></div>
         {visibleProjects.length ? <div className="neo-project-carousel" aria-roledescription="carousel" aria-label={locale === "ar" ? "كاروسيل أعمال عمرو عامر" : "Amr Amer project carousel"}>
           {projectGroups.length > 1 ? <div className="neo-carousel-controls">
             <button type="button" className="neo-carousel-button" onClick={() => moveWorkSlide(-1)} aria-label={locale === "ar" ? "المجموعة السابقة" : "Previous project group"}><span aria-hidden="true">←</span>{locale === "ar" ? "السابق" : "PREV"}</button>
@@ -312,13 +322,13 @@ export default function PortfolioShellV2() {
                   : trackIndex;
                 return <div className="neo-project-slide" dir={direction} key={`project-group-${trackIndex}`} role="group" aria-roledescription="slide" aria-label={`${locale === "ar" ? "المجموعة" : "Group"} ${groupIndex + 1} ${locale === "ar" ? "من" : "of"} ${projectGroups.length}`}>
                 {group.map((project, cardIndex) => {
-                  const projectIndex = groupIndex * 4 + cardIndex;
+                  const projectIndex = groupIndex * 2 + cardIndex;
                   const projectTitle = locale === "ar"
                     ? `تصميم داخلي ${String(projectIndex + 1).padStart(2, "0")}`
                     : `Interior Design ${String(projectIndex + 1).padStart(2, "0")}`;
                   return <article className={`neo-project-card neo-project-card-${(projectIndex % 4) + 1}`} key={project.id}>
                     <div className="neo-project-card-top"><span>AMR AMER / INTERIORS</span><span>{String(projectIndex + 1).padStart(2, "0")}</span></div>
-                    <a className="neo-project-media" href={project.sourceUrl} target="_blank" rel="noreferrer" aria-label={`${t.openProject}: ${projectTitle} (${project.fileName})`}><img src={project.imageUrl} alt={`${locale === "ar" ? "تصميم داخلي من أعمال عمرو عامر" : "Interior design by Amr Amer"} ${String(projectIndex + 1).padStart(2, "0")}`} loading={projectIndex < 4 ? "eager" : "lazy"} /><span className="neo-project-open">{t.openProject}<ArrowUpRight width={15} height={15} /></span></a>
+                    <button className="neo-project-media" type="button" onClick={() => setSelectedProject(project)} aria-label={t.openProject}><img src={project.imageUrl} alt={projectTitle} loading={projectIndex < 4 ? "eager" : "lazy"} /><span className="neo-project-open">{t.openProject}<ArrowUpRight width={15} height={15} /></span></button>
                     <div className="neo-project-details"><strong className="neo-project-title" dir="auto">{projectTitle}</strong><div className="neo-project-author"><span>AA</span><div><b>AMR AMER</b><small>{t.archiveLabel}</small></div></div><div className="neo-project-stats"><span><small>{locale === "ar" ? "النوع" : "FORMAT"}</small><b>{project.fileName.toLowerCase().endsWith(".jpg") ? "JPG" : "PNG"}</b></span><span><small>{locale === "ar" ? "المرجع" : "FILE"}</small><b>{String(projectIndex + 1).padStart(2, "0")}</b></span></div></div>
                   </article>;
                 })}
@@ -330,7 +340,7 @@ export default function PortfolioShellV2() {
           <div className="neo-archive-poster"><div className="archive-grid" /><span className="archive-stamp">REAL<br />WORK<br />ONLY</span><div className="archive-ring" /><div className="archive-card"><span>AMR AMER / ARCHIVE</span><strong>YOUR<br />SPACE<br /><em>YOUR<br />STORY</em></strong><small>WAITING FOR THE FIRST REAL PROJECT</small></div><div className="archive-footer"><span>STUDIO NOTE / 001</span><span>NO PLACEHOLDERS</span></div></div>
           <div className="neo-empty-copy"><span className="neo-chip neo-chip-coral">00 / 00</span><h3>{t.emptyTitle}</h3><p>{emptyText}</p><div className="neo-private-note"><span />{locale === "ar" ? "سيظهر العمل هنا من روابطك الحقيقية فقط." : "Only your real work links will appear here."}</div></div>
         </div>}
-      </section>
+      {selectedProject ? <div className="neo-image-viewer" role="dialog" aria-modal="true" aria-label={t.openProject} onClick={(event) => { if (event.target === event.currentTarget) setSelectedProject(null); }}><button className="neo-image-viewer-close" type="button" onClick={() => setSelectedProject(null)} aria-label={t.close}><CloseIcon width={22} height={22} /></button><figure><img src={selectedProject.imageUrl.replace(/size=\d+/, "size=1600")} alt={t.selectedWork} /><figcaption><span>{liveDesigner.nameEn}</span><span>{t.selectedWork}</span></figcaption></figure></div> : null}</section>
 
       <section className="neo-about neo-pad" id="about">
         <div className="neo-section-number">02 / 05</div>

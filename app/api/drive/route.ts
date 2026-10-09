@@ -5,6 +5,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
+  const requestedSize = Number(request.nextUrl.searchParams.get("size") || 800);
+  const size = Number.isFinite(requestedSize) ? Math.min(1600, Math.max(400, Math.round(requestedSize))) : 800;
   let project;
   try {
     project = (await readSiteContent()).projects.find((item) => item.id === id);
@@ -17,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(`https://drive.google.com/thumbnail?id=${encodeURIComponent(project.id)}&sz=w800`, {
+    const response = await fetch(`https://drive.google.com/thumbnail?id=${encodeURIComponent(project.id)}&sz=w${size}`, {
       headers: { Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" },
       redirect: "follow",
       cache: "no-store"
