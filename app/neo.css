@@ -986,3 +986,65 @@ html[dir="rtl"] .neo-site h3 {
 @media (max-width: 420px) {
   .id-card-portrait { bottom: -12%; height: 112%; }
 }
+
+/* Rebuild the about section as one intentional profile card. */
+.neo-about,
+[dir="rtl"] .neo-about {
+  align-items: center;
+  background: linear-gradient(135deg, #f0f1ef 0%, var(--neo-panel) 75%);
+  border: 1px solid rgba(17, 19, 24, .1);
+  border-radius: 34px;
+  box-shadow: 0 24px 70px rgba(17, 19, 24, .09);
+  column-gap: clamp(38px, 6vw, 82px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, .88fr);
+  margin-block: clamp(36px, 6vw, 82px);
+  padding: clamp(76px, 8vw, 112px) clamp(28px, 5vw, 72px);
+  position: relative;
+}
+.neo-about > .neo-section-number {
+  position: absolute;
+  inset-block-start: 28px;
+  inset-inline-start: clamp(28px, 5vw, 72px);
+}
+.neo-about-main { max-width: 640px; }
+.neo-about-main h2 { font-size: clamp(42px, 5vw, 72px); line-height: 1.2; margin: 22px 0 26px; }
+.neo-about-main > p { max-width: 500px; }
+#about > .neo-id-card {
+  aspect-ratio: .86;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 28px;
+  box-shadow: 0 20px 48px rgba(4, 12, 22, .2);
+  justify-self: center;
+  max-width: 460px;
+  min-height: 480px;
+  width: 100%;
+}
+#about .id-card-stage { min-height: 310px; }
+#about .id-card-portrait { bottom: -8%; height: 106%; }
+
+@media (max-width: 1000px) {
+  .neo-about,[dir="rtl"] .neo-about { grid-template-columns: minmax(0, 1fr) minmax(300px, .85fr); }
+  #about > .neo-id-card { min-height: 440px; }
+}
+
+@media (max-width: 720px) {
+  .neo-about,[dir="rtl"] .neo-about {
+    border-radius: 26px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    margin-inline: 0;
+    padding: 76px 24px 30px;
+  }
+  .neo-about-main { max-width: none; }
+  .neo-about-main h2 { font-size: clamp(40px, 11vw, 64px); margin-block: 18px 22px; }
+  #about > .neo-id-card { aspect-ratio: .9; justify-self: center; max-width: 420px; min-height: 460px; }
+}
+
+@media (max-width: 420px) {
+  .neo-about,[dir="rtl"] .neo-about { padding-inline: 18px; }
+  #about > .neo-id-card { min-height: 410px; padding: 16px; }
+  #about .id-card-stage { min-height: 290px; }
+  #about .id-card-portrait { bottom: -10%; height: 108%; }
+}
