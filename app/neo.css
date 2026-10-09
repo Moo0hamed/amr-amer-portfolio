@@ -920,6 +920,20 @@ html[dir="rtl"] .neo-site h3 {
   .neo-footer-bottom > span:last-child { margin-inline-start: auto; }
 }
 
+@media (max-width: 420px) {
+  .neo-about,[dir="rtl"] .neo-about { padding-inline: 16px; }
+  .neo-id-card { aspect-ratio: auto; min-height: 390px; padding: 17px; }
+  .id-card-top { font-size: 7px; letter-spacing: .07em; }
+  .id-card-top > span:last-child { max-width: 43%; text-align: right; }
+  .id-card-stage { min-height: 275px; }
+  .id-card-side-note { display: none; }
+  .id-card-sun { width: min(52%, 190px); }
+  .id-card-stage-index { bottom: 3%; }
+  .id-card-footer { flex-wrap: wrap; gap: 7px 12px; justify-content: space-between; min-height: 54px; }
+  .id-card-footer p { display: none; }
+  .id-card-footer > div strong { white-space: nowrap; }
+}
+
 .neo-project-slide { gap: 26px; }
 .neo-project-slide::before { opacity: .18; }
 .neo-project-card { background: #f4f3ee; border: 1px solid rgba(17,19,24,.1); border-radius: 30px; box-shadow: 0 18px 44px rgba(0,0,0,.1); gap: 14px 22px; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .8fr); grid-template-rows: 28px minmax(280px, clamp(280px, 31vw, 390px)); overflow: hidden; padding: 18px; }
@@ -967,4 +981,8 @@ html[dir="rtl"] .neo-site h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .neo-site *, .neo-site *::before, .neo-site *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 420px) {
+  .id-card-portrait { bottom: -12%; height: 112%; }
 }
